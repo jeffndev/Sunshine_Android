@@ -28,11 +28,11 @@ public class WeatherProviderTest extends AndroidTestCase {
     public void testDirectProviderQuery(){
         Time time = new Time();
         time.setToNow();
-        Long testDate = 0L;
+        int testDate = Time.getJulianDay(time.toMillis(false),time.gmtoff);
         WeatherProvider provider = new WeatherProvider();
         Cursor cursor = provider.query(
             WeatherEntry.CONTENT_URI.buildUpon().
-                    appendQueryParameter(WeatherEntry.COLUMN_DATE, Long.toString(testDate)).build(),
+                    appendQueryParameter(WeatherEntry.COLUMN_DATE, Integer.toString(testDate)).build(),
                     null,
                     null,
                     null,
