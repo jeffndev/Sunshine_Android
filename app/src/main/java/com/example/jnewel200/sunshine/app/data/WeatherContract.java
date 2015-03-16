@@ -19,7 +19,7 @@ public class WeatherContract {
     public static final String PATH_WEATHER = "weather";
     public static final String PATH_LOCATION = "location";
 
-    public static final Long normalizeData(Long startDate){
+    public static final Long normalizeDate(Long startDate){
         Time time = new Time();
         time.setToNow();
         int julianDay = Time.getJulianDay(startDate,time.gmtoff);
@@ -49,7 +49,7 @@ public class WeatherContract {
         }
         public static Uri buildWeatherLocationWithStartDate(String locationSetting, Long startDate){
             //TODO: make sure this actually works...plus the interface is not clear to me
-            Long normalizedDate = normalizeData(startDate);
+            Long normalizedDate = normalizeDate(startDate);
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
                     .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate))
                     .build();
