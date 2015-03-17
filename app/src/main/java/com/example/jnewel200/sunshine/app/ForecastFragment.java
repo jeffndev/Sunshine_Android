@@ -2,6 +2,7 @@ package com.example.jnewel200.sunshine.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -24,6 +25,8 @@ import android.widget.ListView;
 import android.text.format.Time;
 import android.widget.Toast;
 
+import com.example.jnewel200.sunshine.app.data.WeatherContract;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +43,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ForecastFragment extends Fragment {
-    ArrayAdapter<String> mForecastAdapter;
+    //ArrayAdapter<String> mForecastAdapter;
+    ForecastAdapter mForecastAdapter;
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     public ForecastFragment() {
@@ -89,23 +93,31 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        mForecastAdapter = new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.list_item_forcecast,
-                R.id.list_item_forecast_textview,
-                new ArrayList<String>());
+        String loccationSetting = Utility.getPreferredLocation(getActivity());
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocation = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                loccationSetting,System.currentTimeMillis()
+        );
+        Cursor cursor = getActivity().getContentResolver().query(weatherForLocation,null,null,null, sortOrder);
+        mForecastAdapter = new ForecastAdapter(getActivity(),cursor,0);
+
+//        mForecastAdapter = new ArrayAdapter<String>(
+//                getActivity(),
+//                R.layout.list_item_forcecast,
+//                R.id.list_item_forecast_textview,
+//                new ArrayList<String>());
         ListView lv = (ListView)rootView.findViewById(R.id.listview_forecast);
         lv.setAdapter(mForecastAdapter);
-        lv.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                String forecast = mForecastAdapter.getItem(pos);
-                Intent detailIntent = new Intent(getActivity(),DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT,forecast);
-
-                startActivity(detailIntent);
-            }
-        });
+//        lv.setOnItemClickListener(new OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+//                String forecast = mForecastAdapter.getItem(pos);
+//                Intent detailIntent = new Intent(getActivity(),DetailActivity.class)
+//                        .putExtra(Intent.EXTRA_TEXT,forecast);
+//
+//                startActivity(detailIntent);
+//            }
+//        });
         return rootView;
     }
 /*----------------------FETCH WEATHER TASK (AsyncTask)----------------------*/
@@ -127,19 +139,19 @@ public class ForecastFragment extends Fragment {
             return weatherStrings;
         }
 */
-        @Override
-        protected void onPostExecute(String [] forecasts){
-            if(forecasts == null)
-                Log.v(LOG_TAG,"hit onPostExecute, null forecasts..");
-            else
-                Log.v(LOG_TAG,"hit onPostExecute: numForecasts: " + forecasts.length);
-            if(forecasts != null){
-                Log.v(LOG_TAG,"hit onPostExecute: first forecast: " + forecasts[0]);
-                mForecastAdapter.clear();
-                for(String s: forecasts)
-                    mForecastAdapter.add(s);
-            }
-        }
+//        @Override
+//        protected void onPostExecute(String [] forecasts){
+//            if(forecasts == null)
+//                Log.v(LOG_TAG,"hit onPostExecute, null forecasts..");
+//            else
+//                Log.v(LOG_TAG,"hit onPostExecute: numForecasts: " + forecasts.length);
+//            if(forecasts != null){
+//                Log.v(LOG_TAG,"hit onPostExecute: first forecast: " + forecasts[0]);
+//                mForecastAdapter.clear();
+//                for(String s: forecasts)
+//                    mForecastAdapter.add(s);
+//            }
+//        }
 
         @Override
         protected String [] doInBackground(String... parms){
