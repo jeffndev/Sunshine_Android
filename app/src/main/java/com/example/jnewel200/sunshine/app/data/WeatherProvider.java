@@ -21,6 +21,7 @@ public class WeatherProvider extends ContentProvider {
 
     static final int WEATHER = 100;
     static final int LOCATION = 300;
+    static final int WEATHER_WITH_ID = 105;
     static final int WEATHER_WITH_LOCATION = 101;
     static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
     static final int LOCATION_WITH_ID = 302;
@@ -34,6 +35,10 @@ public class WeatherProvider extends ContentProvider {
         matcher.addURI(WeatherContract.CONTENT_AUTHORITY ,
                 WeatherContract.PATH_WEATHER,
                 WEATHER);
+        //content://auth/weather/
+        matcher.addURI(WeatherContract.CONTENT_AUTHORITY ,
+                WeatherContract.PATH_WEATHER + "/#",
+                WEATHER_WITH_ID);
         //content://auth/weather/*    by location query string
         matcher.addURI(WeatherContract.CONTENT_AUTHORITY,
                 WeatherContract.PATH_WEATHER + "/*",
@@ -75,6 +80,17 @@ public class WeatherProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                break;
+            //weather/#
+            case WEATHER_WITH_ID:{
+                long _id = ContentUris.parseId(uri);
+                rtnCursor = mDBHelper.getReadableDatabase().query(
+                        WeatherEntry.TABLE_NAME,
+                        projection,
+                        WeatherEntry._ID + "=?",
+                        new String [] {Long.toString(_id)},
+                        null,null,null);
+            }
                 break;
             //weather/*
             case WEATHER_WITH_LOCATION: {
@@ -161,8 +177,10 @@ public class WeatherProvider extends ContentProvider {
                         new String [] {LocationEntry._ID},
                         LocationEntry.COLUMN_LOCATION_SETTING + "=?",
                         new String [] {locationSetting},null,null,null);
-                if(!c.moveToFirst()) throw new android.database.SQLException("Failed to find Location row " + uri);
-                long locKey = c.getLong(c.getColumnIndex(LocationEntry._ID));
+                long locKey = 0L;
+                if(c.moveToFirst()) { //throw new android.database.SQLException("Failed to find Location row " + uri);
+                    locKey = c.getLong(c.getColumnIndex(LocationEntry._ID));
+                }
                 deletedRows = mDBHelper.getWritableDatabase().delete(WeatherEntry.TABLE_NAME,
                         WeatherEntry.COLUMN_LOC_KEY + "=?",
                         new String [] {Long.toString(locKey)});
@@ -229,7 +247,7 @@ public class WeatherProvider extends ContentProvider {
     }
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        //TODO:
+        //TODO: implement update in the provider
         return 0;
     }
 
@@ -252,8 +270,21 @@ public class WeatherProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-        return super.bulkInsert(uri, values);
-        //TODO:
+        int match = buildUriMatcher().match(uri);
+        switch(match){
+            case WEATHER:{
+
+            }
+            break;
+            case LOCATION:{
+
+            }
+            break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        return 0;
+        //TODO: bulk insert code, with db transaction
     }
  /*-----------------END ContentProvider protocols-----------------------------------*/
 

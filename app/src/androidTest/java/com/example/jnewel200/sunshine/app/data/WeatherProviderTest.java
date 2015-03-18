@@ -33,7 +33,7 @@ public class WeatherProviderTest extends AndroidTestCase {
         final static String TEST_CITY_NAME = "Minsk";
         final static double TEST_COORD_LONG = 44.555;
         final static double TEST_COORD_LAT = 66.555;
-        final static long TEST_START_DATE = 1423742400000L;
+        final static long TEST_START_DATE = 1423742400000L; //UTC feb 12, 2015 at noon, millis
         final static long MILLIS_IN_A_DAY = 86400000L;
         final static int NUM_WEATHER_ENTRIES = 5;
 

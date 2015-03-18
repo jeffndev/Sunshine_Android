@@ -40,15 +40,16 @@ public class WeatherContract {
                 PATH_WEATHER;
 
         public static Uri buildWeatherUri(Long id){
-            //TODO: resolve this ambiguity....is the id for the db record or what?
             // content://auth/weather/id #id for the actual db record??
+            //it IS for the db record, but there is no support for this
+            // in the uri's //auth/weather/#
             return ContentUris.withAppendedId(CONTENT_URI,id);
         }
         public static Uri buildWeatherLocation(String locationSetting){
             return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
         }
         public static Uri buildWeatherLocationWithStartDate(String locationSetting, Long startDate){
-            //TODO: make sure this actually works...plus the interface is not clear to me
+            //content://auth/weather/*?date=<somelong>
             Long normalizedDate = normalizeDate(startDate);
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
                     .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate))
