@@ -69,7 +69,7 @@ public class FetchWeatherTaskTest extends AndroidTestCase {
         }
 
         assertNotSame(0, locId);
-        FetchWeatherTask task = new FetchWeatherTask(mContext,null);
+        FetchWeatherTask task = new FetchWeatherTask(mContext);
         long locIdFromTask = task.addLocation(TestSouthPoleLocation.TEST_LOCATION_SETTING,
                                 TestSouthPoleLocation.TEST_CITY_NAME,
                                 TestSouthPoleLocation.TEST_COORD_LAT,
@@ -88,7 +88,7 @@ public class FetchWeatherTaskTest extends AndroidTestCase {
                 new String [] {TestSouthPoleLocation.TEST_LOCATION_SETTING});
 
 
-        FetchWeatherTask task = new FetchWeatherTask(mContext,null);
+        FetchWeatherTask task = new FetchWeatherTask(mContext);
         long locIdFromTask = task.addLocation(TestSouthPoleLocation.TEST_LOCATION_SETTING,
                 TestSouthPoleLocation.TEST_CITY_NAME,
                 TestSouthPoleLocation.TEST_COORD_LAT,

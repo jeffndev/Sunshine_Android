@@ -55,7 +55,12 @@ public class WeatherContract {
                     .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate))
                     .build();
         }
-
+        public static Uri buildWeatherByLocationAndDate(String loc, Long date){
+            Long normalizedDate = normalizeDate(date);
+            return CONTENT_URI.buildUpon().appendPath(loc)
+                    .appendPath(Long.toString(normalizedDate))
+                    .build();
+        }
         public static String getLocationSettingFromUri( Uri uri){
             //get the second path segment (after the domain-authority: auth/path/LOC)
             return uri.getPathSegments().get(1);

@@ -36,47 +36,47 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String [] > {
     public static final int WEATHER_CHUNK_SIZE = 14;
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
     private Context mContext;
-    private ArrayAdapter<String> mForecastAdapter;
+    //private ArrayAdapter<String> mForecastAdapter;
 
-    public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter){
+    public FetchWeatherTask(Context context){//, ArrayAdapter<String> forecastAdapter){
         mContext = context;
-        mForecastAdapter = forecastAdapter;
+        //mForecastAdapter = forecastAdapter;
     }
 
-    private String [] getWeatherDataFromDb(String locationSetting){
-        String [] uiFormattedWeatherEntries = null;
-        Cursor cursor = mContext.getContentResolver().query(
-                WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis()),
-                null,null,null,null);
-        if(!cursor.moveToFirst()){ //no data from this, so just return null
-            return null;
-        }
-
-        if(cursor.getCount() != WEATHER_CHUNK_SIZE){
-            long locKey = cursor.getLong(cursor.getColumnIndex(WeatherEntry.COLUMN_LOC_KEY));
-            //delete weather for this location, so you can refresh from OWM API
-            int numDeleted = mContext.getContentResolver().delete(WeatherEntry.CONTENT_URI,
-                    WeatherEntry.COLUMN_LOC_KEY + "=?",
-                    new String [] { Long.toString(locKey)}
-            );
-            if(numDeleted < 1){
-                Log.d(LOG_TAG,
-                  "FetchWeatherFromDb cleared out the old forecasts didn't delete..WARNING..should be something");
-            }
-            uiFormattedWeatherEntries = null;
-        }else{
-            //ContentValues [] valsArray = new ContentValues[WEATHER_CHUNK_SIZE];
-            Vector<ContentValues> cvvs = new Vector<ContentValues>();
-            for(int i=0;i != WEATHER_CHUNK_SIZE;i++)
-            {
-                cvvs.add(weatherCursorRowToContentValues(cursor));
-                //valsArray[i] = weatherCursorRowToContentValues(cursor);
-                cursor.moveToNext();
-            }
-            uiFormattedWeatherEntries = contentValuesToUXStringArray(cvvs);
-        }
-        return uiFormattedWeatherEntries;
-    }
+//    private String [] getWeatherDataFromDb(String locationSetting){
+//        String [] uiFormattedWeatherEntries = null;
+//        Cursor cursor = mContext.getContentResolver().query(
+//                WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis()),
+//                null,null,null,null);
+//        if(!cursor.moveToFirst()){ //no data from this, so just return null
+//            return null;
+//        }
+//
+//        if(cursor.getCount() != WEATHER_CHUNK_SIZE){
+//            long locKey = cursor.getLong(cursor.getColumnIndex(WeatherEntry.COLUMN_LOC_KEY));
+//            //delete weather for this location, so you can refresh from OWM API
+//            int numDeleted = mContext.getContentResolver().delete(WeatherEntry.CONTENT_URI,
+//                    WeatherEntry.COLUMN_LOC_KEY + "=?",
+//                    new String [] { Long.toString(locKey)}
+//            );
+//            if(numDeleted < 1){
+//                Log.d(LOG_TAG,
+//                  "FetchWeatherFromDb cleared out the old forecasts didn't delete..WARNING..should be something");
+//            }
+//            uiFormattedWeatherEntries = null;
+//        }else{
+//            //ContentValues [] valsArray = new ContentValues[WEATHER_CHUNK_SIZE];
+//            Vector<ContentValues> cvvs = new Vector<ContentValues>();
+//            for(int i=0;i != WEATHER_CHUNK_SIZE;i++)
+//            {
+//                cvvs.add(weatherCursorRowToContentValues(cursor));
+//                //valsArray[i] = weatherCursorRowToContentValues(cursor);
+//                cursor.moveToNext();
+//            }
+//            uiFormattedWeatherEntries = contentValuesToUXStringArray(cvvs);
+//        }
+//        return uiFormattedWeatherEntries;
+//    }
 
     public String [] contentValuesToUXStringArray(Vector<ContentValues> cvv){
         String[] resultStrs = new String[cvv.size()];
@@ -193,13 +193,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String [] > {
             return null;
         }
         String locationSetting = parms[0];
-        String [] uiFormattedWeatherEntries = getWeatherDataFromDb(locationSetting);
-        if(uiFormattedWeatherEntries == null){
-            Log.v(LOG_TAG, "FETCHING FROM WEB API!!");
-            uiFormattedWeatherEntries = getWeatherDataFromOWMApi(locationSetting);
-        }else{
-            Log.v(LOG_TAG, "SUCCESS!! FETCHING FROM Local DB!!");
-        }
+        String [] uiFormattedWeatherEntries =
+                getWeatherDataFromOWMApi(locationSetting); //getWeatherDataFromDb(locationSetting);
         return uiFormattedWeatherEntries;
     }
 
@@ -207,15 +202,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String [] > {
          * so for convenience we're breaking it out into its own method now.
          */
 
-    @Override
-    protected void onPostExecute(String[] forecasts) {
-       if(mForecastAdapter != null && forecasts != null){
-           mForecastAdapter.clear();
-           for(String forecastEntry : forecasts){
-               mForecastAdapter.add(forecastEntry);
-           }
-       }
-    }
+//    @Override
+//    protected void onPostExecute(String[] forecasts) {
+//       if(mForecastAdapter != null && forecasts != null){
+//           mForecastAdapter.clear();
+//           for(String forecastEntry : forecasts){
+//               mForecastAdapter.add(forecastEntry);
+//           }
+//       }
+//    }
 
     private String getReadableDateString(long time){
         // Because the API returns a unix timestamp (measured in seconds),

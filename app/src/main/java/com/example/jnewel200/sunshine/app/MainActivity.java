@@ -31,14 +31,17 @@ import java.util.Arrays;
 
 
 public class MainActivity extends ActionBarActivity {
+    private final String FORECASTFRAGMENT_TAG = "FFTAG";
+    private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mLocation = Utility.getPreferredLocation(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
+                    .add(R.id.container, new ForecastFragment(),FORECASTFRAGMENT_TAG)
                     .commit();
         }
     }
@@ -64,25 +67,41 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         if(id == R.id.action_map_location){
-            //TODO: refactor to private method...
-            Intent mapIntent = new Intent(Intent.ACTION_VIEW);
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            String locQuery = prefs.getString(
-                    getString(R.string.pref_location_key),
-                    getString(R.string.pref_location_default)
-            );
-            Uri locUri = Uri.parse("geo:0,0?").buildUpon()
-                    .appendQueryParameter("q",locQuery)
-                    .build();
-            mapIntent.setData(locUri);
-            if( mapIntent.resolveActivity(getPackageManager()) != null ){
-                startActivity(mapIntent);
-            }
+            startMapLocationIntent();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
+    private void startMapLocationIntent(){
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String locQuery = prefs.getString(
+                getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default)
+        );
+        Uri locUri = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q",locQuery)
+                .build();
+        mapIntent.setData(locUri);
+        if( mapIntent.resolveActivity(getPackageManager()) != null ){
+            startActivity(mapIntent);
+        }
+    }
 
-    /**
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String location = Utility.getPreferredLocation( this );
+        // update the location in our second pane using the fragment manager
+        if (location != null && !location.equals(mLocation)) {
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            if ( null != ff ) {
+                ff.onLocationChanged();
+            }
+            mLocation = location;
+        }
+    }
+/**
      * A placeholder fragment containing a simple view.
      */
 
