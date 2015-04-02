@@ -43,41 +43,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String [] > {
         //mForecastAdapter = forecastAdapter;
     }
 
-//    private String [] getWeatherDataFromDb(String locationSetting){
-//        String [] uiFormattedWeatherEntries = null;
-//        Cursor cursor = mContext.getContentResolver().query(
-//                WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, System.currentTimeMillis()),
-//                null,null,null,null);
-//        if(!cursor.moveToFirst()){ //no data from this, so just return null
-//            return null;
-//        }
-//
-//        if(cursor.getCount() != WEATHER_CHUNK_SIZE){
-//            long locKey = cursor.getLong(cursor.getColumnIndex(WeatherEntry.COLUMN_LOC_KEY));
-//            //delete weather for this location, so you can refresh from OWM API
-//            int numDeleted = mContext.getContentResolver().delete(WeatherEntry.CONTENT_URI,
-//                    WeatherEntry.COLUMN_LOC_KEY + "=?",
-//                    new String [] { Long.toString(locKey)}
-//            );
-//            if(numDeleted < 1){
-//                Log.d(LOG_TAG,
-//                  "FetchWeatherFromDb cleared out the old forecasts didn't delete..WARNING..should be something");
-//            }
-//            uiFormattedWeatherEntries = null;
-//        }else{
-//            //ContentValues [] valsArray = new ContentValues[WEATHER_CHUNK_SIZE];
-//            Vector<ContentValues> cvvs = new Vector<ContentValues>();
-//            for(int i=0;i != WEATHER_CHUNK_SIZE;i++)
-//            {
-//                cvvs.add(weatherCursorRowToContentValues(cursor));
-//                //valsArray[i] = weatherCursorRowToContentValues(cursor);
-//                cursor.moveToNext();
-//            }
-//            uiFormattedWeatherEntries = contentValuesToUXStringArray(cvvs);
-//        }
-//        return uiFormattedWeatherEntries;
-//    }
-
     public String [] contentValuesToUXStringArray(Vector<ContentValues> cvv){
         String[] resultStrs = new String[cvv.size()];
         for ( int i = 0; i < cvv.size(); i++ ) {

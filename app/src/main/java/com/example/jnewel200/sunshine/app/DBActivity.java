@@ -4,10 +4,15 @@ package com.example.jnewel200.sunshine.app;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,8 +26,10 @@ import com.example.jnewel200.sunshine.app.data.WeatherContract;
 import java.util.ArrayList;
 
 
-public class DBActivity extends ActionBarActivity {
+public class DBActivity extends ActionBarActivity{
+
     private DBViewFragment mDBViewFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,107 +79,125 @@ public class DBActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DBViewFragment extends Fragment {
+    public static class DBViewFragment extends Fragment
+            implements LoaderManager.LoaderCallbacks<Cursor>{
+
+        private static final int DBVIEW_LOADER_ID = 301;
+
+        private enum TABLE_VEWING {LOCATION, WEATHER};
+        private TABLE_VEWING currentViewMode = TABLE_VEWING.LOCATION;
+
         ArrayAdapter<String> mDBViewAdapter;
         public DBViewFragment() {
             setHasOptionsMenu(true);
         }
 
-        void loadLocations(){
-            if(mDBViewAdapter == null) return;
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            getLoaderManager().initLoader(DBVIEW_LOADER_ID, null, this);
+        }
 
-            Cursor cursor = getActivity().getContentResolver().query(
-                    WeatherContract.LocationEntry.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-            try {
-                if (cursor.moveToFirst()) {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            Uri dbUri;
+            String sortOrder; //by table id
+            switch(currentViewMode){
+                case LOCATION:
+                    sortOrder = WeatherContract.LocationEntry._ID;
+                    dbUri = WeatherContract.LocationEntry.CONTENT_URI;
+                    break;
+                case WEATHER:
+                    sortOrder = WeatherContract.WeatherEntry._ID;
+                    String curLocationSetting = Utility.getPreferredLocation(getActivity());
+                    dbUri = WeatherContract.WeatherEntry.buildWeatherLocation(curLocationSetting);
+                    break;
+                default:
+                    return null;
+            }
+            return new CursorLoader(getActivity(),
+                    dbUri, null, null, null, sortOrder);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) { /*empty*/  }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if(!data.moveToFirst()) return;
+
+            mDBViewAdapter.clear();
+            mDBViewAdapter.add(buildHeaderRow());
+            do{
+                mDBViewAdapter.add(buildCurrentDataRow(data));
+            }while(data.moveToNext());
+        }
+
+        private String buildCurrentDataRow(Cursor cursor){
+            if(cursor == null) return null;
+            String formattedRow;
+            switch (currentViewMode){
+                case LOCATION: {
                     int _idIdx = cursor.getColumnIndex(WeatherContract.LocationEntry._ID);
                     int cityNameIdx = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_CITY_NAME);
                     int locQueryIdx = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING);
-                    mDBViewAdapter.clear();
-                    //List<String> dbRowsList = new ArrayList<String>();
-                    //header row
-                    mDBViewAdapter.add(WeatherContract.LocationEntry._ID + "\t| " +
-                            WeatherContract.LocationEntry.COLUMN_CITY_NAME + "\t| " +
-                            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING);
-                    do{
-                        long _id = cursor.getLong(_idIdx);
-                        String cityName = cursor.getString(cityNameIdx);
-                        String locationQuery = cursor.getString(locQueryIdx);
-                        mDBViewAdapter.add(String.format("%d\t | %s\t| %s",_id, cityName,locationQuery));
-                    }while(cursor.moveToNext());
-                }
-            }finally{
-                if(cursor != null)
-                    cursor.close();
-            }
-        }
-
-        void loadWeatherForLocation(){
-            if(mDBViewAdapter == null) return;
-
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String curLocationSetting = prefs.getString(
-                    getString(R.string.pref_location_key),
-                    getString(R.string.pref_location_default)
-            );
-
-            Cursor cursor = getActivity().getContentResolver().query(
-                    WeatherContract.WeatherEntry.buildWeatherLocation(curLocationSetting),
-                    null,
-                    null,
-                    null,
-                    WeatherContract.WeatherEntry.COLUMN_DATE + " ASC"
-            );
-            try {
-                if (cursor.moveToFirst()) {
+                    long _id = cursor.getLong(_idIdx);
+                    String cityName = cursor.getString(cityNameIdx);
+                    String locationQuery = cursor.getString(locQueryIdx);
+                    formattedRow = String.format("%d\t | %s\t| %s",_id, cityName,locationQuery);
+                    }
+                    break;
+                case WEATHER:{
                     int _idIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry._ID);
                     int dateIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
                     int descIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC);
                     int maxTempIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP);
                     int minTempIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP);
-
-                    mDBViewAdapter.clear();
-                    //List<String> dbRowsList = new ArrayList<String>();
-                    //header row
-                    mDBViewAdapter.add(WeatherContract.WeatherEntry._ID + "\t| " +
-                                    WeatherContract.WeatherEntry.COLUMN_DATE + "\t| " +
-                                    WeatherContract.WeatherEntry.COLUMN_SHORT_DESC + "\t|" +
-                                    WeatherContract.WeatherEntry.COLUMN_MAX_TEMP + "\t|" +
-                                    WeatherContract.WeatherEntry.COLUMN_MIN_TEMP
-                    );
-                    do{
-                        long _id = cursor.getLong(_idIdx);
-                        long date = cursor.getLong(dateIdx);
-                        String desc = cursor.getString(descIdx);
-                        double maxTemp = cursor.getDouble(maxTempIdx);
-                        double minTemp = cursor.getDouble(minTempIdx);
-                        mDBViewAdapter.add(String.format("%d\t | %d\t| %s\t | %f\t | %f",
-                                _id, date,desc, maxTemp, minTemp));
-                    }while(cursor.moveToNext());
-                }
-            }finally{
-                if(cursor != null)
-                    cursor.close();
+                    long _id = cursor.getLong(_idIdx);
+                    long date = cursor.getLong(dateIdx);
+                    String desc = cursor.getString(descIdx);
+                    double maxTemp = cursor.getDouble(maxTempIdx);
+                    double minTemp = cursor.getDouble(minTempIdx);
+                    formattedRow =
+                            String.format("%d\t | %d\t| %s\t | %f\t | %f", _id, date,desc, maxTemp, minTemp);
+                    }
+                    break;
+                default:
+                    formattedRow = null;
             }
+            return formattedRow;
+        }
+        private String buildHeaderRow(){
+            switch(currentViewMode){
+                case LOCATION:
+                    return WeatherContract.LocationEntry._ID + "\t| " +
+                            WeatherContract.LocationEntry.COLUMN_CITY_NAME + "\t| " +
+                            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING;
+                case WEATHER:
+                    return WeatherContract.WeatherEntry._ID + "\t| " +
+                            WeatherContract.WeatherEntry.COLUMN_DATE + "\t| " +
+                            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC + "\t|" +
+                            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP + "\t|" +
+                            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP;
+                default:
+                    return null;
+            }
+
+        }
+        void loadLocations(){
+            currentViewMode = TABLE_VEWING.LOCATION;
+            getLoaderManager().restartLoader(DBVIEW_LOADER_ID,null,this);
         }
 
-        @Override
-        public void onStart(){
-            super.onStart();
-            loadLocations();
+        void loadWeatherForLocation(){
+            currentViewMode = TABLE_VEWING.WEATHER;
+            getLoaderManager().restartLoader(DBVIEW_LOADER_ID,null,this);
         }
-
+        
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_db, container, false);
-            //String [] dbRowsInit = new String [] {"id  |  date  |  descr", " 1   |  12/3/2015 | first item"};
-            //List<String> dbRowsInitList = Arrays.asList(dbRowsInit);
             mDBViewAdapter = new ArrayAdapter<String>(
                     getActivity(),
                     R.layout.list_item_dbview_row,

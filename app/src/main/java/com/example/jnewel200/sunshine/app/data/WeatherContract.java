@@ -40,6 +40,7 @@ public class WeatherContract {
                 PATH_WEATHER;
 
         public static Uri buildWeatherUri(Long id){
+            //TODO: check if this is correct? subtle error, i'm getting id's that are not auto-inc
             // content://auth/weather/id #id for the actual db record??
             //it IS for the db record, but there is no support for this
             // in the uri's //auth/weather/#

@@ -97,7 +97,7 @@ public class DetailFragment extends Fragment
         mViewHolder.windView.setText( Utility.getFormattedWindSpeedDisplay(getActivity(), wind, windDegrees, isMetric));
         mViewHolder.pressureView.setText( Utility.getFormattedPressureDisplay(getActivity(), pressure));
 
-        if(mShareActionProvider!=null){
+        if(mShareActionProvider!=null && mForecast != null){
             mShareActionProvider.setShareIntent(createShareForecastIntent());
         }
     }

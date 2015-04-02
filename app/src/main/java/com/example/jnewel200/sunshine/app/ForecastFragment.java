@@ -27,7 +27,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     //ArrayAdapter<String> mForecastAdapter;
     ForecastAdapter mForecastAdapter;
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
-    private final int LOADER_ID = 0;
+    private static final int LOADER_ID = 0;
     private static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
             // the content provider joins the location & weather tables in the background
@@ -82,7 +82,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private void fetchWeatherData(){
         Log.v(LOG_TAG,"FETCHING WEATHER FROM API!!");
         String location = Utility.getPreferredLocation(getActivity());
-        FetchWeatherTask task = new FetchWeatherTask(getActivity());//, mForecastAdapter);
+        FetchWeatherTask task = new FetchWeatherTask(getActivity());
         task.execute(location);
     }
 
@@ -100,13 +100,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 return super.onOptionsItemSelected(item);
         }
     }
-//    @Override
-//    public void onStart(){
-//        Log.v(LOG_TAG,"Starting onStart(), should see pre-FetchWeather log next");
-//        super.onStart();
-//        Log.v(LOG_TAG,"About to FetchWeatherData..");
-//        fetchWeatherData();
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,15 +110,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         final Uri weatherForLocation = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
                 locationSetting,System.currentTimeMillis()
         );
-//        Cursor cursor = getActivity().getContentResolver().query(
-//                weatherForLocation,null,null,null, sortOrder);
-//        mForecastAdapter = new ForecastAdapter(getActivity(),cursor,0);
-
-//        mForecastAdapter = new ArrayAdapter<String>(
-//                getActivity(),
-//                R.layout.list_item_forecast,
-//                R.id.list_item_forecast_textview,
-//                new ArrayList<String>());
         ListView lv = (ListView)rootView.findViewById(R.id.listview_forecast);
         mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
         lv.setAdapter(mForecastAdapter);
@@ -146,17 +130,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
               }
             }
         );
-
-//        lv.setOnItemClickListener(new OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-//                String forecast = mForecastAdapter.getItem(pos);
-//                Intent detailIntent = new Intent(getActivity(),DetailActivity.class)
-//                        .putExtra(Intent.EXTRA_TEXT,forecast);
-//
-//                startActivity(detailIntent);
-//            }
-//        });
         return rootView;
     }
 
@@ -184,7 +157,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             Uri uri =
                     WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(prefLocation, System.currentTimeMillis());
             return new CursorLoader(getActivity(),
-                   uri, FORECAST_COLUMNS,null, null,sortOrder);
+                   uri, FORECAST_COLUMNS, null, null,sortOrder);
         }else{
             return null;
         }
