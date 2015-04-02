@@ -28,16 +28,16 @@ import java.util.ArrayList;
 
 public class DBActivity extends ActionBarActivity{
 
-    private DBViewFragment mDBViewFragment;
-
+    //private DBViewFragment mDBViewFragment;
+    private final String DBVIEWFRAGMENT_TAG = "DBVIEW";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_db);
-        mDBViewFragment = new DBViewFragment();
+        //mDBViewFragment = new DBViewFragment();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, mDBViewFragment)
+                    .add(R.id.container, new DBViewFragment(),DBVIEWFRAGMENT_TAG)
                     .commit();
         }
     }
@@ -63,14 +63,17 @@ public class DBActivity extends ActionBarActivity{
             startActivity(intent);
             return true;
         }
+        DBViewFragment dbf;
         if(id == R.id.action_db_location){
             //  I want to then call loadWeatherForLocation()...
-            mDBViewFragment.loadLocations();
+            dbf = (DBViewFragment)getSupportFragmentManager().findFragmentByTag(DBVIEWFRAGMENT_TAG);
+            dbf.loadLocations();
             return true;
         }
         if(id == R.id.action_db_weather){
             //  I want to then call loadWeatherForLocation()...
-            mDBViewFragment.loadWeatherForLocation();
+            dbf = (DBViewFragment)getSupportFragmentManager().findFragmentByTag(DBVIEWFRAGMENT_TAG);
+            dbf.loadWeatherForLocation();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -125,7 +128,10 @@ public class DBActivity extends ActionBarActivity{
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if(!data.moveToFirst()) return;
-
+            //TODO: figure out the RIGHT way to deal with this,
+            //  an interesting problem, in that the Cursor is maintained
+            //  between orientation changes, BUT the Mode of this Fragment
+            //  is NOT maintained...
             mDBViewAdapter.clear();
             mDBViewAdapter.add(buildHeaderRow());
             do{
@@ -148,18 +154,27 @@ public class DBActivity extends ActionBarActivity{
                     }
                     break;
                 case WEATHER:{
-                    int _idIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry._ID);
+                    //get cursor column indexes, then grab the vals
+                    //TODO: investigate this...it's seems like a bug in the cursor ?
+                    int _idIdx = 0;//cursor.getColumnIndex(WeatherContract.WeatherEntry._ID);
                     int dateIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
                     int descIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC);
                     int maxTempIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP);
                     int minTempIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP);
+                    int idLocIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_LOC_KEY);
+                    int humidityIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_HUMIDITY);
+                    //get values and prepare the output string...
                     long _id = cursor.getLong(_idIdx);
                     long date = cursor.getLong(dateIdx);
+                    String dateString = Utility.formatDate(date);
                     String desc = cursor.getString(descIdx);
                     double maxTemp = cursor.getDouble(maxTempIdx);
                     double minTemp = cursor.getDouble(minTempIdx);
+                    int locationId = cursor.getInt(idLocIdx);
+                    double humidity = cursor.getDouble(humidityIdx);
                     formattedRow =
-                            String.format("%d\t | %d\t| %s\t | %f\t | %f", _id, date,desc, maxTemp, minTemp);
+                            String.format("%d\t | %d\t| %s\t| %s\t | %f\t | %f\t | %f\t | %d",
+                              _id, date, dateString, desc, maxTemp, minTemp, humidity, locationId);
                     }
                     break;
                 default:
@@ -176,9 +191,12 @@ public class DBActivity extends ActionBarActivity{
                 case WEATHER:
                     return WeatherContract.WeatherEntry._ID + "\t| " +
                             WeatherContract.WeatherEntry.COLUMN_DATE + "\t| " +
+                            " formatted-date\t| " +
                             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC + "\t|" +
                             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP + "\t|" +
-                            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP;
+                            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP + "\t|" +
+                            WeatherContract.WeatherEntry.COLUMN_HUMIDITY +  "\t|" +
+                            WeatherContract.WeatherEntry.COLUMN_LOC_KEY;
                 default:
                     return null;
             }
@@ -193,7 +211,7 @@ public class DBActivity extends ActionBarActivity{
             currentViewMode = TABLE_VEWING.WEATHER;
             getLoaderManager().restartLoader(DBVIEW_LOADER_ID,null,this);
         }
-        
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {

@@ -110,8 +110,8 @@ public class WeatherProviderTest extends AndroidTestCase {
             String weatherLine = String.format("%s- %s - %s/%s",
                     Utility.formatDate(cursor.getLong(COL_WEATHER_DATE)),
                     cursor.getString(COL_WEATHER_DESC),
-                    Utility.formatTemperature( cursor.getDouble(COL_WEATHER_MAX_TEMP),isMetric),
-                    Utility.formatTemperature( cursor.getDouble(COL_WEATHER_MIN_TEMP),isMetric)
+                    Utility.formatTemperature( mContext, cursor.getDouble(COL_WEATHER_MAX_TEMP),isMetric),
+                    Utility.formatTemperature(mContext, cursor.getDouble(COL_WEATHER_MIN_TEMP),isMetric)
             );
             Log.e("TESTf",weatherLine);
         }while(cursor.moveToNext());
