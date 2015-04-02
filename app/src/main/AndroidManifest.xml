@@ -33,6 +33,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.jnewel200.sunshine.app.MainActivity" />
         </activity>
+        <activity
+            android:name=".DBActivity"
+            android:label="@string/title_activity_db"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.jnewel200.sunshine.app.MainActivity" />
+        </activity>
         <provider
             android:authorities="com.example.jnewel200.sunshine.app"
             android:name=".data.WeatherProvider" />

@@ -1,17 +1,15 @@
 package com.example.jnewel200.sunshine.app;
 
 
-import android.content.AsyncTaskLoader;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -93,6 +91,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         switch(item.getItemId()){
             case R.id.action_refresh:
                 fetchWeatherData();
+                return true;
+            case R.id.action_db_view:
+                Intent intent = new Intent(getActivity(),DBActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

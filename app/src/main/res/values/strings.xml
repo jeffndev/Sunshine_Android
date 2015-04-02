@@ -18,6 +18,7 @@
     <string name="pref_units_imperial" translatable="false">imperial</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="title_activity_db">DBActivity</string>
     <string name="format_full_friendly_date" translatable="false"><xliff:g id="day">%1$s</xliff:g>, <xliff:g id="date">%2$s</xliff:g></string>
     <!-- Temperature formats in degrees [CHAR LIMIT=NONE] -->
     <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
