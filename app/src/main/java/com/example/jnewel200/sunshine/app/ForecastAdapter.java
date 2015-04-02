@@ -82,9 +82,7 @@ public class ForecastAdapter extends CursorAdapter {
         return view;
     }
 
-    /*
-        This is where we fill-in the views with the contents of the cursor.
-     */
+
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         if(cursor!= null) {
@@ -92,6 +90,7 @@ public class ForecastAdapter extends CursorAdapter {
 
             boolean isMetric = Utility.isMetric(mContext);
             int weatherIconId = cursor.getInt(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID));
+            int assetIconId = Utility.getIconResourceForWeatherCondition(weatherIconId);
             String hi = Utility.formatTemperature(mContext, cursor.getDouble(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP)), isMetric);
             String lo = Utility.formatTemperature(mContext, cursor.getDouble(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP)), isMetric);
             String forecast = cursor.getString(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC));
@@ -105,7 +104,7 @@ public class ForecastAdapter extends CursorAdapter {
             viewHolder.hiView.setText(hi);
             viewHolder.loView.setText(lo);
             viewHolder.descriptionView.setText(forecast);
-            viewHolder.iconView.setImageResource(R.drawable.ic_launcher);
+            viewHolder.iconView.setImageResource(assetIconId);
         }
     }
     public static class ViewHolder{

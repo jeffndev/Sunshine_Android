@@ -163,6 +163,7 @@ public class DBActivity extends ActionBarActivity{
                     int minTempIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP);
                     int idLocIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_LOC_KEY);
                     int humidityIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_HUMIDITY);
+                    int weatherConditionIdIdx = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID);
                     //get values and prepare the output string...
                     long _id = cursor.getLong(_idIdx);
                     long date = cursor.getLong(dateIdx);
@@ -172,9 +173,10 @@ public class DBActivity extends ActionBarActivity{
                     double minTemp = cursor.getDouble(minTempIdx);
                     int locationId = cursor.getInt(idLocIdx);
                     double humidity = cursor.getDouble(humidityIdx);
+                    int weatherConditionId = cursor.getInt(weatherConditionIdIdx);
                     formattedRow =
-                            String.format("%d\t | %d\t| %s\t| %s\t | %f\t | %f\t | %f\t | %d",
-                              _id, date, dateString, desc, maxTemp, minTemp, humidity, locationId);
+                       String.format("%d\t | %d\t| %s\t| %s\t | %f\t | %f\t | %f\t | %d\t | %d",
+                        _id, date, dateString, desc, maxTemp, minTemp, humidity, weatherConditionId, locationId);
                     }
                     break;
                 default:
@@ -196,6 +198,7 @@ public class DBActivity extends ActionBarActivity{
                             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP + "\t|" +
                             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP + "\t|" +
                             WeatherContract.WeatherEntry.COLUMN_HUMIDITY +  "\t|" +
+                            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID +  "\t|" +
                             WeatherContract.WeatherEntry.COLUMN_LOC_KEY;
                 default:
                     return null;

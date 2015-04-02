@@ -44,7 +44,8 @@ public class DetailFragment extends Fragment
             WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
             WeatherContract.WeatherEntry.COLUMN_PRESSURE,
             WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
-            WeatherContract.WeatherEntry.COLUMN_DEGREES
+            WeatherContract.WeatherEntry.COLUMN_DEGREES,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID
     };
 
     // these constants correspond to the projection defined above, and must change if the
@@ -58,6 +59,7 @@ public class DetailFragment extends Fragment
     private static final int COL_WEATHER_PRESSURE = 6;
     private static final int COL_WEATHER_WIND_SPEED = 7;
     private static final int COL_WEATHER_WIND_DEGREES = 8;
+    private static final int COL_WEATHER_CONDITION_ID = 9;
 
 
     public DetailFragment() {
@@ -85,6 +87,7 @@ public class DetailFragment extends Fragment
         double pressure = data.getDouble(COL_WEATHER_PRESSURE);
         String high = Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
         String low = Utility.formatTemperature(getActivity(), data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
+        int weatherIconId = data.getInt(COL_WEATHER_CONDITION_ID);
 
         mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
         //set the data in the detail view items...
@@ -96,6 +99,7 @@ public class DetailFragment extends Fragment
         mViewHolder.humidityView.setText(Utility.getFormattedHumidityDisplay(getActivity(),humidity));
         mViewHolder.windView.setText( Utility.getFormattedWindSpeedDisplay(getActivity(), wind, windDegrees, isMetric));
         mViewHolder.pressureView.setText( Utility.getFormattedPressureDisplay(getActivity(), pressure));
+        mViewHolder.iconView.setImageResource( Utility.getArtResourceForWeatherCondition(weatherIconId) );
 
         if(mShareActionProvider!=null && mForecast != null){
             mShareActionProvider.setShareIntent(createShareForecastIntent());
