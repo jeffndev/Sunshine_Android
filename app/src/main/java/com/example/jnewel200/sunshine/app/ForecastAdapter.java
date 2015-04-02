@@ -90,7 +90,9 @@ public class ForecastAdapter extends CursorAdapter {
 
             boolean isMetric = Utility.isMetric(mContext);
             int weatherIconId = cursor.getInt(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID));
-            int assetIconId = Utility.getIconResourceForWeatherCondition(weatherIconId);
+            int assetIconId = (getItemViewType(cursor.getPosition()) == VIEW_TYPE_TODAY ?
+                              Utility.getArtResourceForWeatherCondition(weatherIconId) :
+                              Utility.getIconResourceForWeatherCondition(weatherIconId));
             String hi = Utility.formatTemperature(mContext, cursor.getDouble(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP)), isMetric);
             String lo = Utility.formatTemperature(mContext, cursor.getDouble(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP)), isMetric);
             String forecast = cursor.getString(cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC));
