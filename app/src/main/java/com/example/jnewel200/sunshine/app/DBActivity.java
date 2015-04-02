@@ -30,6 +30,8 @@ public class DBActivity extends ActionBarActivity{
 
     //private DBViewFragment mDBViewFragment;
     private final String DBVIEWFRAGMENT_TAG = "DBVIEW";
+    public enum TABLE_VIEWING {LOCATION, WEATHER};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,9 +88,7 @@ public class DBActivity extends ActionBarActivity{
             implements LoaderManager.LoaderCallbacks<Cursor>{
 
         private static final int DBVIEW_LOADER_ID = 301;
-
-        private enum TABLE_VEWING {LOCATION, WEATHER};
-        private TABLE_VEWING currentViewMode = TABLE_VEWING.LOCATION;
+        private TABLE_VIEWING currentViewMode = TABLE_VIEWING.LOCATION;
 
         ArrayAdapter<String> mDBViewAdapter;
         public DBViewFragment() {
@@ -206,12 +206,12 @@ public class DBActivity extends ActionBarActivity{
 
         }
         void loadLocations(){
-            currentViewMode = TABLE_VEWING.LOCATION;
+            currentViewMode = TABLE_VIEWING.LOCATION;
             getLoaderManager().restartLoader(DBVIEW_LOADER_ID,null,this);
         }
 
         void loadWeatherForLocation(){
-            currentViewMode = TABLE_VEWING.WEATHER;
+            currentViewMode = TABLE_VIEWING.WEATHER;
             getLoaderManager().restartLoader(DBVIEW_LOADER_ID,null,this);
         }
 

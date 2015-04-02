@@ -30,11 +30,11 @@ public class ForecastAdapter extends CursorAdapter {
     /**
      * Prepare the weather high/lows for presentation.
      */
-    private String formatHighLows(double high, double low) {
-        boolean isMetric = Utility.isMetric(mContext);
-        String highLowStr = Utility.formatTemperature(mContext, high, isMetric) + "/" + Utility.formatTemperature(mContext, low, isMetric);
-        return highLowStr;
-    }
+//    private String formatHighLows(double high, double low) {
+//        boolean isMetric = Utility.isMetric(mContext);
+//        String highLowStr = Utility.formatTemperature(mContext, high, isMetric) + "/" + Utility.formatTemperature(mContext, low, isMetric);
+//        return highLowStr;
+//    }
 
     @Override
     public int getItemViewType(int position) {
@@ -50,21 +50,21 @@ public class ForecastAdapter extends CursorAdapter {
             This is ported from FetchWeatherTask --- but now we go straight from the cursor to the
             string.
          */
-    private String convertCursorRowToUXFormat(Cursor cursor) {
-        // get row indices for our cursor
-        int idx_max_temp = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP);
-        int idx_min_temp = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP);
-        int idx_date = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
-        int idx_short_desc = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC);
-
-        String highAndLow = formatHighLows(
-                cursor.getDouble(idx_max_temp),
-                cursor.getDouble(idx_min_temp));
-
-        return Utility.formatDate(cursor.getLong(idx_date)) +
-                " - " + cursor.getString(idx_short_desc) +
-                " - " + highAndLow;
-    }
+//    private String convertCursorRowToUXFormat(Cursor cursor) {
+//        // get row indices for our cursor
+//        int idx_max_temp = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP);
+//        int idx_min_temp = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP);
+//        int idx_date = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
+//        int idx_short_desc = cursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC);
+//
+//        String highAndLow = formatHighLows(
+//                cursor.getDouble(idx_max_temp),
+//                cursor.getDouble(idx_min_temp));
+//
+//        return Utility.formatDate(cursor.getLong(idx_date)) +
+//                " - " + cursor.getString(idx_short_desc) +
+//                " - " + highAndLow;
+//    }
 
     /*
         Remember that these views are reused as needed.
