@@ -269,7 +269,7 @@ public class Utility {
     }
 
     public static String getFormattedHumidityDisplay(Context context, double humidity){
-        return context.getString( R.string.format_humidity, "HUMIDITY", humidity*100);
+        return context.getString( R.string.format_humidity, "HUMIDITY", humidity);
     }
 
     public static String getFormattedWindSpeedDisplay(Context context, double windSpeed, double degrees, boolean isMetric){
