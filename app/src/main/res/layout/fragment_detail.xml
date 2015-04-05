@@ -29,10 +29,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:text="100"
                     android:id="@+id/detail_frag_textview_maxtemp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:text="80"
                     android:id="@+id/detail_frag_textview_mintemp"/>
              </LinearLayout>
             <LinearLayout
@@ -45,10 +47,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/detail_frag_imageview_weather"
-                    android:src="@mipmap/ic_launcher"/>
+                    />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="dern hot"
                     android:id="@+id/detail_frag_textview_forecast"/>
             </LinearLayout>
 

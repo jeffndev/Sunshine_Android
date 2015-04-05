@@ -137,7 +137,8 @@ public class DetailFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Intent intent = getActivity().getIntent();
-        if(intent != null) {
+
+        if(intent != null && intent.getData() != null) {
             Uri forecastUri = intent.getData();
             return new CursorLoader(getActivity(),
                     forecastUri, FORECAST_COLUMNS, null, null, null);
