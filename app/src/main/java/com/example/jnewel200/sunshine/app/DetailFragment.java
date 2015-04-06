@@ -29,11 +29,13 @@ public class DetailFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
+    public static final String WEATHER_DETAIL_DATA_TAG = "WeatherDetailUri";
     private String mForecast;
     private ViewHolder mViewHolder;
     private ShareActionProvider mShareActionProvider;
+    private Uri mUri;
 
-    private static final int DETAIL_LOADER_ID = 1;
+    public static final int DETAIL_LOADER_ID = 1;
 
     private static final String[] FORECAST_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
@@ -64,6 +66,16 @@ public class DetailFragment extends Fragment
 
     public DetailFragment() {
         setHasOptionsMenu(true);
+    }
+
+    public void onLocationChanged(String newLocation){
+        Uri uri = mUri;
+        if(uri != null){
+            Long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
+            Uri updatedUri = WeatherContract.WeatherEntry.buildWeatherByLocationAndDate(newLocation,date);
+            mUri = updatedUri;
+            getLoaderManager().restartLoader(DETAIL_LOADER_ID,null,this);
+        }
     }
 
     @Override
@@ -120,15 +132,15 @@ public class DetailFragment extends Fragment
 
 
         public ViewHolder(View view){
-            iconView = (ImageView)view.findViewById(R.id.detail_frag_imageview_weather);
-            dateView = (TextView)view.findViewById(R.id.detail_frag_textview_date);
-            dayView = (TextView)view.findViewById(R.id.detail_frag_textview_day);
-            hiView = (TextView)view.findViewById(R.id.detail_frag_textview_maxtemp);
-            loView = (TextView)view.findViewById(R.id.detail_frag_textview_mintemp);
-            forecastView = (TextView)view.findViewById(R.id.detail_frag_textview_forecast);
-            humidityView = (TextView)view.findViewById(R.id.detail_frag_textview_humidity);
-            windView = (TextView)view.findViewById(R.id.detail_frag_textview_wind);
-            pressureView = (TextView)view.findViewById(R.id.detail_frag_textview_pressure);
+            iconView = (ImageView)view.findViewById(R.id.detail_icon);
+            dateView = (TextView)view.findViewById(R.id.detail_date_textview);
+            dayView = (TextView)view.findViewById(R.id.detail_day_textview);
+            hiView = (TextView)view.findViewById(R.id.detail_high_textview);
+            loView = (TextView)view.findViewById(R.id.detail_low_textview);
+            forecastView = (TextView)view.findViewById(R.id.detail_forecast_textview);
+            humidityView = (TextView)view.findViewById(R.id.detail_humidity_textview);
+            windView = (TextView)view.findViewById(R.id.detail_wind_textview);
+            pressureView = (TextView)view.findViewById(R.id.detail_pressure_textview);
         }
     }
     @Override
@@ -136,12 +148,15 @@ public class DetailFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
-
-        if(intent != null && intent.getData() != null) {
-            Uri forecastUri = intent.getData();
-            return new CursorLoader(getActivity(),
-                    forecastUri, FORECAST_COLUMNS, null, null, null);
+        if( mUri != null){
+            return new CursorLoader(
+                    getActivity(),
+                    mUri,
+                    FORECAST_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
         }else{
             return null;
         }
@@ -156,6 +171,11 @@ public class DetailFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if(args != null){
+            mUri = args.getParcelable(WEATHER_DETAIL_DATA_TAG);
+        }
+
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         mViewHolder = new ViewHolder(view);
         //view.setTag(viewHolder);

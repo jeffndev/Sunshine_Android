@@ -34,8 +34,13 @@ public class DetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.WEATHER_DETAIL_DATA_TAG, getIntent().getData());
+
+            DetailFragment dtl = new DetailFragment();
+            dtl.setArguments(args);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.weather_detail_container, new DetailFragment())
+                    .add(R.id.weather_detail_container, dtl)
                     .commit();
         }
     }

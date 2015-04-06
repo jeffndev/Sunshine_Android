@@ -30,7 +30,25 @@ public class DBActivity extends ActionBarActivity{
 
     //private DBViewFragment mDBViewFragment;
     private final String DBVIEWFRAGMENT_TAG = "DBVIEW";
-    public enum TABLE_VIEWING {LOCATION, WEATHER};
+    public enum TABLE_VIEWING {
+        LOCATION(0), WEATHER(1);
+        private final int value;
+        private TABLE_VIEWING(int value){
+            this.value = value;
+        }
+        public int getValue() { return value;}
+        public static TABLE_VIEWING fromInt(int val){
+            switch(val){
+                case 0:
+                    return LOCATION;
+                case 1:
+                    return WEATHER;
+                default:
+                    return null;
+            }
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +100,14 @@ public class DBActivity extends ActionBarActivity{
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * THE FRAGMENT CLASS
      */
     public static class DBViewFragment extends Fragment
             implements LoaderManager.LoaderCallbacks<Cursor>{
 
         private static final int DBVIEW_LOADER_ID = 301;
         private TABLE_VIEWING currentViewMode = TABLE_VIEWING.LOCATION;
+        private final String TABLE_VIEWING_MODE_KEY = "VIEW_TABLE_MODE";
 
         ArrayAdapter<String> mDBViewAdapter;
         public DBViewFragment() {
@@ -96,7 +115,17 @@ public class DBActivity extends ActionBarActivity{
         }
 
         @Override
+        public void onSaveInstanceState(Bundle outState) {
+            outState.putInt(TABLE_VIEWING_MODE_KEY, currentViewMode.getValue());
+            super.onSaveInstanceState(outState);
+        }
+
+        @Override
         public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            //moved to onCreateView...
+//            if(savedInstanceState!= null) {
+//                currentViewMode = TABLE_VIEWING.fromInt(savedInstanceState.getInt(TABLE_VIEWING_MODE_KEY));
+//            }
             super.onActivityCreated(savedInstanceState);
             getLoaderManager().initLoader(DBVIEW_LOADER_ID, null, this);
         }
@@ -218,6 +247,9 @@ public class DBActivity extends ActionBarActivity{
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            if(savedInstanceState!= null) {
+                currentViewMode = TABLE_VIEWING.fromInt(savedInstanceState.getInt(TABLE_VIEWING_MODE_KEY));
+            }
             View rootView = inflater.inflate(R.layout.fragment_db, container, false);
             mDBViewAdapter = new ArrayAdapter<String>(
                     getActivity(),

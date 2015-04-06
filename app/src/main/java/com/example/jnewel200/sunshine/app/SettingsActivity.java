@@ -1,8 +1,11 @@
 package com.example.jnewel200.sunshine.app;
 
 
+import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import android.preference.ListPreference;
@@ -13,6 +16,7 @@ import android.preference.PreferenceActivity;
 
 import android.preference.PreferenceManager;
 
+import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 
 
@@ -37,8 +41,14 @@ public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
+    public Intent getParentActivityIntent() {
+        //WARNING! bug fix, not sure exactly why, but you NEED TO BE AWARE of this..
+        return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    }
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);

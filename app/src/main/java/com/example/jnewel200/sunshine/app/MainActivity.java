@@ -11,24 +11,48 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
-    //private final String FORECASTFRAGMENT_TAG = "FFTAG";
-    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    public static final String DETAILFRAGMENT_TAG = "DFTAG";
     private String mLocation;
     private boolean mTwoPane = false;
 
+    /*....ForecastFragment.Callable interface implementation...for Fragment notifications...*/
+    @Override
+    public void onItemSelected(Uri dataDetailUri) {
+        if(mTwoPane){
+            //find the existing detail frag
+            DetailFragment dtl = new DetailFragment();
+            //set the data
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(dtl.WEATHER_DETAIL_DATA_TAG, dataDetailUri);
+            dtl.setArguments(bundle);
+            //refresh loader .. too much coupling with DetailFragment...
+            //              MainActivity should not know this detail...
+            //getLoaderManager().restartLoader( DetailFragment.DETAIL_LOADER_ID, bundle, dtl);
+            //do below (and above) instead...better
+            getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.weather_detail_container, dtl, DETAILFRAGMENT_TAG).commit();
+        }else {
+            Intent detailIntent = new Intent(this, DetailActivity.class)
+                                            .setData(dataDetailUri);
+            startActivity(detailIntent);
+        }
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mLocation = Utility.getPreferredLocation(this);
         super.onCreate(savedInstanceState);
+        mLocation = Utility.getPreferredLocation(this);
         setContentView(R.layout.activity_main);
         if(findViewById(R.id.weather_detail_container) != null){
             //meaning, the wide-screen layout main is being used, so the detail frag IS in there
             mTwoPane = true;
             if(savedInstanceState == null){
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.weather_detail_container, new DetailFragment())
+                        .replace(R.id.weather_detail_container, new DetailFragment(),DETAILFRAGMENT_TAG)
                         .commit();
             }
         }else{
@@ -92,11 +116,14 @@ public class MainActivity extends ActionBarActivity {
             if ( null != ff ) {
                 ff.onLocationChanged();
             }
+            DetailFragment df = (DetailFragment)getSupportFragmentManager()
+                            .findFragmentByTag(DETAILFRAGMENT_TAG);
+            if(df != null){
+                df.onLocationChanged(location);
+            }
+
             mLocation = location;
         }
     }
-/**
-     * A placeholder fragment containing a simple view.
-     */
 
 }

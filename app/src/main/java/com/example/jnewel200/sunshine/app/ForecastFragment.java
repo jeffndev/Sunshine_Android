@@ -59,6 +59,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_COORD_LONG = 8;
 
 
+    public interface Callback{
+        void onItemSelected(Uri dataDetailUri);
+    }
 
     public ForecastFragment() {
     }
@@ -123,9 +126,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                         String prefLoc = Utility.getPreferredLocation(getActivity());
                         Uri weatherItemUri =
                            WeatherContract.WeatherEntry.buildWeatherByLocationAndDate(prefLoc,itemDate);
-                        Intent detailIntent = new Intent(getActivity(),DetailActivity.class);
-                        detailIntent.setData(weatherItemUri);
-                        startActivity(detailIntent);
+                        ((Callback)getActivity()).onItemSelected(weatherItemUri);
                     }
               }
             }
