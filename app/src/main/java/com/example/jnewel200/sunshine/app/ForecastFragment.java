@@ -26,6 +26,9 @@ import com.example.jnewel200.sunshine.app.data.WeatherContract;
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     //ArrayAdapter<String> mForecastAdapter;
     ForecastAdapter mForecastAdapter;
+    int mLastListPos = 0;
+    final String POSITION_STATE_KEY = "LAST_LIST_POSITION";
+
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private static final int LOADER_ID = 0;
     private static final String[] FORECAST_COLUMNS = {
@@ -105,8 +108,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(mLastListPos != ListView.INVALID_POSITION) {
+            outState.putInt(POSITION_STATE_KEY, mLastListPos);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
+        if(savedInstanceState!= null && savedInstanceState.containsKey(POSITION_STATE_KEY)) {
+            mLastListPos = savedInstanceState.getInt(POSITION_STATE_KEY);
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         String locationSetting = Utility.getPreferredLocation(getActivity());
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
@@ -122,6 +137,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 //  pass it a uri to fetch the data..Detail Activity implements LoaderCallbacks to get it
                     Cursor cursor = (Cursor)parent.getItemAtPosition(position);
                     if(cursor != null){
+                        mLastListPos = position;
                         Long itemDate = cursor.getLong(COL_WEATHER_DATE);
                         String prefLoc = Utility.getPreferredLocation(getActivity());
                         Uri weatherItemUri =
@@ -142,8 +158,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.v(LOG_TAG,"FORECAST LOADER SWAPPING to Fresh Cursor");
         mForecastAdapter.swapCursor(data);
+        if(mLastListPos != ListView.INVALID_POSITION) {
+            ListView lv = (ListView) getView().findViewById(R.id.listview_forecast);
+            lv.smoothScrollToPosition(mLastListPos);
+        }
     }
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
