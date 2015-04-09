@@ -26,13 +26,19 @@ public class ForecastAdapter extends CursorAdapter {
 
     private final int VIEW_TYPE_TODAY = 0;
     private final int VIEW_TYPE_FUTURE_DAY = 1;
+    private boolean mUseTodayLayout = true;
     /**
      * Prepare the weather high/lows for presentation.
      */
+    public void setUseTodayLayout(boolean useTodayLayout){
+        mUseTodayLayout = useTodayLayout;
+    }
 
     @Override
     public int getItemViewType(int position) {
-        return (position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY);
+        //but if this is twopane, switch it back to R.layout.list_item_forecast layout...
+        //how to know if the main activity is in two pane?
+        return (position == 0 && mUseTodayLayout ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY);
     }
 
     @Override
@@ -50,6 +56,7 @@ public class ForecastAdapter extends CursorAdapter {
                             R.layout.list_item_forecast_today:
                             R.layout.list_item_forecast
         );
+
         View view =  LayoutInflater.from(context).inflate(layoutId, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         view.setTag(viewHolder);

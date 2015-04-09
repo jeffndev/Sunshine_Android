@@ -50,6 +50,8 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
         if(findViewById(R.id.weather_detail_container) != null){
             //meaning, the wide-screen layout main is being used, so the detail frag IS in there
             mTwoPane = true;
+
+
             if(savedInstanceState == null){
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.weather_detail_container, new DetailFragment(),DETAILFRAGMENT_TAG)
@@ -58,6 +60,9 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
         }else{
             mTwoPane = false;
         }
+        ForecastFragment ff =
+                (ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+        ff.setUseTodayLayout(!mTwoPane);
     }
 
 

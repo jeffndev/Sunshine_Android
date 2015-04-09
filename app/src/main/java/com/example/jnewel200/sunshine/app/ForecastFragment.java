@@ -24,10 +24,17 @@ import com.example.jnewel200.sunshine.app.data.WeatherContract;
 
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
-    //ArrayAdapter<String> mForecastAdapter;
+    private boolean mUseTodayLayout;
     ForecastAdapter mForecastAdapter;
     int mLastListPos = 0;
     final String POSITION_STATE_KEY = "LAST_LIST_POSITION";
+
+    public void setUseTodayLayout(boolean useTodayLayout){
+        mUseTodayLayout = useTodayLayout;
+        if(mForecastAdapter != null){
+            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
+    }
 
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private static final int LOADER_ID = 0;
@@ -130,6 +137,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         );
         ListView lv = (ListView)rootView.findViewById(R.id.listview_forecast);
         mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
+        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
         lv.setAdapter(mForecastAdapter);
         lv.setOnItemClickListener( new AdapterView.OnItemClickListener() {
                                        @Override
