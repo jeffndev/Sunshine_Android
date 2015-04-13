@@ -12,6 +12,10 @@
     <style name="ForecastTheme" parent="AppTheme">
         <item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>
     </style>
+    <!-- Settings activity theme. -->
+
+    <style name="SettingsTheme" parent="AppTheme">
+    </style>
 
     <style name="ForecastListStyle">
         <item name="android:choiceMode">none</item>
