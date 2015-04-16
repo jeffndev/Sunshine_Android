@@ -96,6 +96,12 @@ public class DBActivity extends ActionBarActivity{
             dbf.loadWeatherForLocation();
             return true;
         }
+        if(id == R.id.action_db_delete_weather_at_location){
+            //  I want to then call loadWeatherForLocation()...
+            dbf = (DBViewFragment)getSupportFragmentManager().findFragmentByTag(DBVIEWFRAGMENT_TAG);
+            dbf.deleteWeatherItemsForLocation();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -157,10 +163,7 @@ public class DBActivity extends ActionBarActivity{
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if(!data.moveToFirst()) return;
-            //TODO: figure out the RIGHT way to deal with this,
-            //  an interesting problem, in that the Cursor is maintained
-            //  between orientation changes, BUT the Mode of this Fragment
-            //  is NOT maintained...
+
             mDBViewAdapter.clear();
             mDBViewAdapter.add(buildHeaderRow());
             do{
@@ -234,9 +237,28 @@ public class DBActivity extends ActionBarActivity{
             }
 
         }
+        void deleteWeatherItemsForLocation(){
+            long currentLocationKey = 0;
+            String curLocPreference = Utility.getPreferredLocation(getActivity());
+
+            Cursor cursor = getActivity().getContentResolver().query(WeatherContract.LocationEntry.CONTENT_URI,
+                    new String[] {WeatherContract.LocationEntry._ID},
+                    WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + "=?",
+                    new String []{ curLocPreference}, null);
+            if(!cursor.moveToFirst()) return;
+
+            currentLocationKey = cursor.getLong(cursor.getColumnIndex(WeatherContract.LocationEntry._ID));
+            getActivity().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+                    WeatherContract.WeatherEntry.COLUMN_LOC_KEY + "=?",
+                    new String[]{Long.toString(currentLocationKey)}
+            );
+            currentViewMode = TABLE_VIEWING.LOCATION;
+            loadLocations();
+        }
+
         void loadLocations(){
             currentViewMode = TABLE_VIEWING.LOCATION;
-            getLoaderManager().restartLoader(DBVIEW_LOADER_ID,null,this);
+            getLoaderManager().restartLoader(DBVIEW_LOADER_ID, null, this);
         }
 
         void loadWeatherForLocation(){

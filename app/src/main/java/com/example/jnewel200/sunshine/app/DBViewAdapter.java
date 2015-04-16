@@ -15,6 +15,9 @@ import org.w3c.dom.Text;
 
 /**
  * Created by jnewel200 on 4/2/2015.
+ * WARNING!!
+ * CURRENTLY NOT! USING THIS, some issues still todo, so am using an ArrayAdapter<String> right now
+ *
  */
 public class DBViewAdapter extends CursorAdapter{
 

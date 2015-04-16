@@ -5,6 +5,7 @@
     tools:context="com.example.jnewel200.sunshine.app.DBActivity">
     <item android:id="@+id/action_db_location" android:title="LOC" android:orderInCategory="1" app:showAsAction="always"/>
     <item android:id="@+id/action_db_weather" android:title="WEA" android:orderInCategory="2" app:showAsAction="always"/>
+    <item android:id="@+id/action_db_delete_weather_at_location" android:title="DEL" android:orderInCategory="2" app:showAsAction="always"/>
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>
