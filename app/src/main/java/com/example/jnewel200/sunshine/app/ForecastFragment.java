@@ -94,13 +94,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void fetchWeatherData(){
-        Log.v(LOG_TAG,"FETCHING WEATHER FROM API!!");
         String location = Utility.getPreferredLocation(getActivity());
         Intent intent = new Intent(getActivity(), SunshineService.class);
-        intent.putExtra("LOCATION", location);
+        intent.putExtra(SunshineService.LOCATION_EXTRA, location);
         getActivity().startService(intent);
-        //FetchWeatherTask task = new FetchWeatherTask(getActivity());
-        //task.execute(location);
     }
 
     @Override

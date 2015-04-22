@@ -51,6 +51,14 @@ public class DBActivity extends ActionBarActivity{
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        //CALLED AFTER onCreate, but only if the app was terminated
+        // by the system...
+        super.onRestoreInstanceState(savedInstanceState);
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_db);

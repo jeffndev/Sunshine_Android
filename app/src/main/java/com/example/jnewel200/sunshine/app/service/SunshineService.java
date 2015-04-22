@@ -31,20 +31,19 @@ import java.util.Vector;
  * Created by jnewel200 on 4/22/2015.
  */
 public class SunshineService extends IntentService {
+    final static public String LOCATION_EXTRA = "LOCATION";
     final private String LOG_TAG = SunshineService.class.getSimpleName();
     public final int WEATHER_CHUNK_SIZE = 14;
 
     public SunshineService() {
         super(SunshineService.class.getSimpleName());
     }
-    public SunshineService(String name) {
-        super(name);
-    }
+
 
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.v(LOG_TAG,"onHandleIntent fired!");
-        if(intent.hasExtra("LOCATION")){
+        if(intent.hasExtra(LOCATION_EXTRA)){
             String loc = intent.getStringExtra("LOCATION");
             getWeatherDataFromOWMApi(loc);
         }
