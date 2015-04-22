@@ -31,6 +31,9 @@ import java.util.Vector;
 
 /**
  * Created by jnewel200 on 3/18/2015.
+ * This task makes a call to the Weather Service, using the current location
+ *  as its only parameter
+ *
  */
 public class FetchWeatherTask extends AsyncTask<String, Void, String [] > {
     public static final int WEATHER_CHUNK_SIZE = 14;

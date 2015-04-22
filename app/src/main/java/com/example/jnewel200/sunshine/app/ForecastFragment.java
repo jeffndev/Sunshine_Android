@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.jnewel200.sunshine.app.data.WeatherContract;
+import com.example.jnewel200.sunshine.app.service.SunshineService;
 
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
@@ -95,8 +96,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private void fetchWeatherData(){
         Log.v(LOG_TAG,"FETCHING WEATHER FROM API!!");
         String location = Utility.getPreferredLocation(getActivity());
-        FetchWeatherTask task = new FetchWeatherTask(getActivity());
-        task.execute(location);
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra("LOCATION", location);
+        getActivity().startService(intent);
+        //FetchWeatherTask task = new FetchWeatherTask(getActivity());
+        //task.execute(location);
     }
 
     @Override
