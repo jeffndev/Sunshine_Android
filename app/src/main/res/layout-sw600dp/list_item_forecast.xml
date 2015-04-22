@@ -18,7 +18,8 @@
             android:layout_gravity="center"
             android:id="@+id/list_item_icon"
             android:layout_width="32dp"
-            android:layout_height="32dp"/>
+            android:layout_height="32dp"
+            />
 
     </FrameLayout>
 

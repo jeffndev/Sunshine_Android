@@ -88,6 +88,7 @@ public class ForecastAdapter extends CursorAdapter {
             viewHolder.loView.setText(lo);
             viewHolder.descriptionView.setText(forecast);
             viewHolder.iconView.setImageResource(assetIconId);
+            viewHolder.iconView.setContentDescription(forecast); //accessibility feature
         }
     }
     public static class ViewHolder{

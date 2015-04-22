@@ -112,6 +112,7 @@ public class DetailFragment extends Fragment
         mViewHolder.windView.setText( Utility.getFormattedWindSpeedDisplay(getActivity(), wind, windDegrees, isMetric));
         mViewHolder.pressureView.setText( Utility.getFormattedPressureDisplay(getActivity(), pressure));
         mViewHolder.iconView.setImageResource( Utility.getArtResourceForWeatherCondition(weatherIconId) );
+        mViewHolder.iconView.setContentDescription( weatherDescription );
 
         if(mShareActionProvider!=null && mForecast != null){
             mShareActionProvider.setShareIntent(createShareForecastIntent());
