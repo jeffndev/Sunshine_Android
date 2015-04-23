@@ -63,6 +63,7 @@ public class SunshineService extends IntentService {
         if(!cursor.moveToFirst()) return;
 
         currentLocationKey = cursor.getLong(cursor.getColumnIndex(WeatherContract.LocationEntry._ID));
+        cursor.close();
         getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
                 WeatherContract.WeatherEntry.COLUMN_LOC_KEY + "=?",
                 new String[]{Long.toString(currentLocationKey)}

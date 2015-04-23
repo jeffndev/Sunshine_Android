@@ -74,9 +74,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         void onItemSelected(Uri dataDetailUri);
     }
 
-    public ForecastFragment() {
+    void onStaleWeatherData(){
+        fetchWeatherData();
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
-
     void onLocationChanged() {
         fetchWeatherData();
         getLoaderManager().restartLoader(LOADER_ID, null, this);
