@@ -31,4 +31,10 @@
     <string name="format_wind_kmh">Wind: <xliff:g id="speed">%1$1.0f</xliff:g> km/h <xliff:g id="direction">%2$s</xliff:g></string>
     <!-- Pressure format CHAR LIMIT=25] -->
     <string name="format_pressure">Pressure: <xliff:g id="pressure">%1.0f</xliff:g> hPa</string>
+
+    <!-- Account type (for sync-adapter authenticator) -->
+    <!-- SyncAdapter related -->
+    < string name="sync_account_type">sunshine.example.com</string>
+    <string name="content_authority">com.example.jnewel200.sunshine.app</string>
+
 </resources>
