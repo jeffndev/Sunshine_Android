@@ -1,8 +1,10 @@
 package com.example.jnewel200.sunshine.app.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -297,5 +299,18 @@ public class SunshineService extends IntentService {
             locKey = ContentUris.parseId(insertUri);
         }
         return locKey;
+    }
+
+    static public class AlarmReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //get the intent that was wrapped in the broadcasted pending intent..
+            // and pass it on...
+            Log.v("ALARM RECEIVER", "Intent Received: " + Long.toString(System.currentTimeMillis()));
+            Intent passedIntent = new Intent(context,SunshineService.class);
+            passedIntent.putExtra(SunshineService.LOCATION_EXTRA, intent.getStringExtra(SunshineService.LOCATION_EXTRA));
+            context.startService(passedIntent);
+        }
     }
 }

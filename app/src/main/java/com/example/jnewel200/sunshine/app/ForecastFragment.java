@@ -1,6 +1,9 @@
 package com.example.jnewel200.sunshine.app;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -95,10 +98,19 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void fetchWeatherData(){
-        String location = Utility.getPreferredLocation(getActivity());
-        Intent intent = new Intent(getActivity(), SunshineService.class);
-        intent.putExtra(SunshineService.LOCATION_EXTRA, location);
-        getActivity().startService(intent);
+        //setting up the intent to throw when the alarm triggers...
+        Intent sunshineRefresh = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+        sunshineRefresh.putExtra(SunshineService.LOCATION_EXTRA, Utility.getPreferredLocation(getActivity()));
+         //cant push regular intents through the Alarm mechanism, need Pending Intent wrappers...
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, sunshineRefresh, PendingIntent.FLAG_ONE_SHOT);
+        //setting the alarm
+        AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        Log.v(LOG_TAG, "Intent Set To Broadcast: " + Long.toString(System.currentTimeMillis()));
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pendingIntent );
+//        String location = Utility.getPreferredLocation(getActivity());
+//        Intent intent = new Intent(getActivity(), SunshineService.class);
+//        intent.putExtra(SunshineService.LOCATION_EXTRA, location);
+//        getActivity().startService(intent);
     }
 
     @Override
