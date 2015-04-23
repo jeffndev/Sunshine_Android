@@ -15,7 +15,7 @@ import java.util.Date;
 public class Utility {
 
     public static final String DATE_FORMAT = "yyyyMMdd";
-
+    private static final String LAST_REFRESHED_WEATHER_KEY = "weather_last_refreshed";
 
     public static String getPreferredLocation(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -28,6 +28,17 @@ public class Utility {
         return prefs.getString(context.getString(R.string.pref_units_key),
                 context.getString(R.string.pref_units_metric))
                 .equals(context.getString(R.string.pref_units_metric));
+    }
+
+    public static void setLastRefreshed(long system_time, Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor =   prefs.edit();
+        editor.putLong(LAST_REFRESHED_WEATHER_KEY, system_time);
+        editor.commit();
+    }
+    public static long getLastRefreshed(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getLong(LAST_REFRESHED_WEATHER_KEY,-1);
     }
 
     public static String formatTemperature(Context context, double temperature, boolean isMetric) {
@@ -116,6 +127,16 @@ public class Utility {
         Date date = new Date(dateInMillis);
         return DateFormat.getDateInstance().format(date);
     }
+    public static boolean isTodayUnixtime(long timestamp_val){
+        Time time = new Time();
+        time.setToNow();
+        long currentTime = System.currentTimeMillis();
+        int julianDay = Time.getJulianDay(timestamp_val, time.gmtoff);
+        int currentJulianDay = Time.getJulianDay(currentTime, time.gmtoff);
+
+        return (julianDay == currentJulianDay);
+    }
+
     public static String getFriendlyDayString(Context context, long dateInMillis) {
 
         // The day string for forecast uses the following logic:

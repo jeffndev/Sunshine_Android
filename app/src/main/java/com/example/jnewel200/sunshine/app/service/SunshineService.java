@@ -12,6 +12,7 @@ import android.text.format.Time;
 import android.util.Log;
 
 import com.example.jnewel200.sunshine.app.R;
+import com.example.jnewel200.sunshine.app.Utility;
 import com.example.jnewel200.sunshine.app.data.WeatherContract;
 
 import org.json.JSONArray;
@@ -42,14 +43,33 @@ public class SunshineService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.v(LOG_TAG,"onHandleIntent fired!");
         if(intent.hasExtra(LOCATION_EXTRA)){
+            Log.v(LOG_TAG,"re-fetching from Service");
             String loc = intent.getStringExtra("LOCATION");
-            getWeatherDataFromOWMApi(loc);
+            //first wipe out the old forecasts, they only have a day's half-life
+            deleteWeatherItemsForLocation(loc);
+            if(getWeatherDataFromOWMApi(loc)){
+                Utility.setLastRefreshed(System.currentTimeMillis(),this);
+            }
         }
     }
+    void deleteWeatherItemsForLocation(String curLoc){
+        long currentLocationKey = 0;
 
-    private void getWeatherDataFromOWMApi(String locationSetting){
+        Cursor cursor = getContentResolver().query(WeatherContract.LocationEntry.CONTENT_URI,
+                new String[] {WeatherContract.LocationEntry._ID},
+                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + "=?",
+                new String []{ curLoc}, null);
+        if(!cursor.moveToFirst()) return;
+
+        currentLocationKey = cursor.getLong(cursor.getColumnIndex(WeatherContract.LocationEntry._ID));
+        getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+                WeatherContract.WeatherEntry.COLUMN_LOC_KEY + "=?",
+                new String[]{Long.toString(currentLocationKey)}
+        );
+    }
+
+    private boolean getWeatherDataFromOWMApi(String locationSetting){
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String forecastJsonStr = null;
@@ -78,7 +98,7 @@ public class SunshineService extends IntentService {
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if(inputStream == null){
-                return;
+                return false;
             }
 
             reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -87,12 +107,12 @@ public class SunshineService extends IntentService {
                 buffer.append(ln + "\n");
             }
             if(buffer.length() == 0){
-                return;
+                return false;
             }
             forecastJsonStr = buffer.toString();
         }catch(IOException e){
-            Log.e(LOG_TAG, "Error ", e);
-            return;
+            Log.e(LOG_TAG, "Error: " + e.toString(), e);
+            return false;
         }finally{
             if(urlConnection != null)
                 urlConnection.disconnect();
@@ -107,10 +127,11 @@ public class SunshineService extends IntentService {
 
         try{
             getWeatherDataFromJson(forecastJsonStr, locationSetting);
+            return true;
         }catch(JSONException e){
             Log.d(LOG_TAG,"problem parsing weather data json: " + e.toString());
         }
-
+        return false;
     }
     private String[] getWeatherDataFromJson(String forecastJsonStr, String locationSetting)
             throws JSONException {

@@ -64,8 +64,15 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
         ForecastFragment ff =
                 (ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
         ff.setUseTodayLayout(!mTwoPane);
+        checkAndDispatchCurrentWeatherCheck();
     }
 
+    void checkAndDispatchCurrentWeatherCheck(){
+        long lastRefreshed = Utility.getLastRefreshed(this);
+        if(!Utility.isTodayUnixtime(lastRefreshed)){
+
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
